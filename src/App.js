@@ -1,32 +1,40 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import TodoList from "./TodoList";
+import { v4 as uuidv4 } from "uuid";
+
+const LOCAL_STORAGE_KEY = "todoApp.todos";
 
 let App = () => {
-  // const info = [
-  //   { id: 1, name: "To Do 1", complete: true },
-  //   { id: 2, name: "To Do 2", complete: false },
-  //   { id: 3, name: "To Do 3", complete: false },
-  // ];
-
   const [todos, setTodos] = useState([]);
   const todoNameRef = useRef();
 
-  const handleAddTodo = (e) => {
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+
+    if (storedTodos) {
+      console.log(storedTodos);
+      setTodos(storedTodos);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
+  }, [todos]);
+
+  function handleAddTodo(e) {
     const name = todoNameRef.current.value;
     if (name === "") return;
-
     setTodos((prevTodos) => {
-      return [...prevTodos, { id: 1, name: name, complete: false }];
+      return [...prevTodos, { id: uuidv4(), name: name, complete: false }];
     });
-
     todoNameRef.current.value = null;
-  };
+  }
 
   return (
     <>
       <TodoList todos={todos} />
       <input type="text" ref={todoNameRef} />
-      <button onClick={handleAddTodo}>Add To Do</button>
+      <button onClick={handleAddTodo}>Add T o Do</button>
       <button>Clear Completed</button>
       <div>0 let to do </div>
     </>
